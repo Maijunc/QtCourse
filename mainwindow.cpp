@@ -7,16 +7,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->btnNum0, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum1, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum2, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum3, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum4, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum5, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum6, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum7, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum8, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum9, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
+    digitBtns = {{Qt::Key_0, ui->btnNum0},
+               {Qt::Key_1, ui->btnNum1},
+               {Qt::Key_2, ui->btnNum2},
+               {Qt::Key_3, ui->btnNum3},
+               {Qt::Key_4, ui->btnNum4},
+               {Qt::Key_5, ui->btnNum5},
+               {Qt::Key_6, ui->btnNum6},
+               {Qt::Key_7, ui->btnNum7},
+               {Qt::Key_8, ui->btnNum8},
+               {Qt::Key_9, ui->btnNum9},
+               };
+
+    foreach(auto btn, digitBtns)
+        connect(btn, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
 
     connect(ui->btnPlus, SIGNAL(clicked()), this, SLOT(btnBinaryOperatorClicked()));
     connect(ui->btnMinus, SIGNAL(clicked()), this, SLOT(btnBinaryOperatorClicked()));
@@ -99,6 +103,12 @@ void MainWindow::on_btnPeriod_clicked()
 
 void MainWindow::on_btnDelete_clicked()
 {
+    if(markEqual)
+    {
+        operand = operands.front();
+        operands.pop_front();
+        markEqual = false;
+    }
     operand = operand.left(operand.length() - 1);
 
     ui->display->setText(operand);
@@ -116,13 +126,11 @@ void MainWindow::on_btnClear_clicked()
 
 void MainWindow::btnBinaryOperatorClicked()
 {
-    ui->statusbar->showMessage("last operand " + operand);
     QString opcode = qobject_cast<QPushButton*>(sender())->text();
 
     if(operand != "") //完成equal操作，此时operand为空，但是operands不为空，理应可以继续添加操作符 但是正常来说上次按完下次不能连着按
     {
-        if(operand != "=")
-            operands.push_back(operand);
+        operands.push_back(operand);
         operand = "";
 
         opcodes.push_back(opcode);
@@ -132,11 +140,21 @@ void MainWindow::btnBinaryOperatorClicked()
 
         if(ok)
             ui->display->setText(operands.front());
+    }else if(markEqual)
+    {
+        opcodes.push_back(opcode);
+        markEqual = false;
     }
 }
 
 void MainWindow::btnUnaryOperatorClicked()
 {
+    if(markEqual)
+    {
+        operand = operands.front();
+        operands.pop_front();
+        markEqual = false;
+    }
     if(operand != "")
     {
         double result = operand.toDouble();
@@ -166,13 +184,32 @@ void MainWindow::on_btnEqual_clicked()
     if(operand != "")
     {
         operands.push_back(operand);
-        operand = "=";
+        operand = "";
+        markEqual = true;
 
         bool ok = false;
         QString result = calculation(&ok);
-        if(ok)
+        if(ok) //表示此时是通过等号完成的运算
             ui->display->setText(operands.front());
+        ui->statusbar->showMessage(QString("operand is %1, operands.front() is %2").arg(operand).arg(operands.front()));
     }
 
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    foreach(auto btnKey, digitBtns.keys())
+    {
+        if(event->key() == btnKey)
+            digitBtns[btnKey]->animateClick();
+    }
+
+}
+
+
+void MainWindow::on_btnClearRecent_clicked()
+{
+    operand.clear();
+    ui->display->setText(operand);
 }
 
