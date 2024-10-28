@@ -11,5 +11,7 @@
         <file>image/save.svg</file>
         <file>image/saveas.svg</file>
         <file>image/undo.svg</file>
+        <file>image/find.svg</file>
+        <file>image/replace.svg</file>
     </qresource>
 </RCC>

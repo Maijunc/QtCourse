@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include "aboutdialog.h"
+#include "searchdialog.h"
+#include "replacedialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,6 +20,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+    void on_actionAbout_triggered();
+
+    void on_actionFind_triggered();
+
+    void on_actionReplace_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -24,3 +24,24 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+    AboutDialog dlg;
+    dlg.exec();
+}
+
+
+void MainWindow::on_actionFind_triggered()
+{
+    SearchDialog dlg;
+    dlg.exec();
+}
+
+
+void MainWindow::on_actionReplace_triggered()
+{
+    ReplaceDialog dlg;
+    dlg.exec();
+}
+
