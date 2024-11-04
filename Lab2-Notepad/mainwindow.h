@@ -8,6 +8,8 @@
 #include "replacedialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QColorDialog>
+#include <QFontDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -55,6 +57,24 @@ private slots:
     void on_textEdit_undoAvailable(bool b);
 
     void on_textEdit_redoAvailable(bool b);
+
+    void on_actionFontColor_triggered();
+
+    void on_actionFontBackgroundColor_triggered();
+
+    void on_actionBackgroundColor_triggered();
+
+    void on_actionLineWrap_triggered();
+
+    void on_actionFont_triggered();
+
+    void on_actionShowToolBar_triggered();
+
+    void on_actionShowStatusBar_triggered();
+
+    void on_actionSelectAll_triggered();
+
+    void on_actionExit_triggered();
 
 private:
     Ui::MainWindow *ui;

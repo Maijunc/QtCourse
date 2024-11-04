@@ -27,6 +27,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionUndo->setEnabled(false);
     ui->actionRedo->setEnabled(false);
     ui->actionPaste->setEnabled(false);
+
+    ui->actionShowToolBar->setChecked(true);
+    ui->actionShowStatusBar->setChecked(true);
+
+    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+
+    if(mode == QTextEdit::NoWrap) {
+        ui->actionLineWrap->setChecked(false);
+    } else {
+        ui->actionLineWrap->setChecked(true);
+    }
+
 }
 
 MainWindow::~MainWindow()
@@ -236,5 +248,85 @@ void MainWindow::on_textEdit_undoAvailable(bool b)
 void MainWindow::on_textEdit_redoAvailable(bool b)
 {
     ui->actionRedo->setEnabled(b);
+}
+
+
+void MainWindow::on_actionFontColor_triggered()
+{
+    QColor color = QColorDialog::getColor(Qt::black, this, "选择颜色");
+    if(color.isValid()){
+        ui->textEdit->setStyleSheet(ui->textEdit->styleSheet() + QString("QPlainTextEdit {color: %1}").arg(color.name()));
+    }
+}
+
+
+void MainWindow::on_actionFontBackgroundColor_triggered()
+{
+    QColor color = QColorDialog::getColor(Qt::black, this, "选择颜色");
+    if(color.isValid()){
+        ui->textEdit->setStyleSheet(ui->textEdit->styleSheet() + QString("QPlainTextEdit {background-color: %1}").arg(color.name()));
+    }
+}
+
+
+void MainWindow::on_actionBackgroundColor_triggered()
+{
+
+}
+
+
+void MainWindow::on_actionLineWrap_triggered()
+{
+    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+
+    if(mode == QTextEdit::NoWrap) {
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+
+        ui->actionLineWrap->setChecked(true);
+    } else {
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+
+        ui->actionLineWrap->setChecked(false);
+    }
+}
+
+
+void MainWindow::on_actionFont_triggered()
+{
+    bool ok = false;
+    QFont font = QFontDialog::getFont(&ok, this);
+
+    if(ok)
+        ui->textEdit->setFont(font);
+}
+
+
+void MainWindow::on_actionShowToolBar_triggered()
+{
+    bool visible = ui->toolBar->isVisible();
+    ui->toolBar->setVisible(!visible);
+    ui->actionShowToolBar->setChecked(!visible);
+
+}
+
+
+void MainWindow::on_actionShowStatusBar_triggered()
+{
+    bool visible = ui->statusbar->isVisible();
+    ui->statusbar->setVisible(!visible);
+    ui->actionShowStatusBar->setChecked(!visible);
+}
+
+
+void MainWindow::on_actionSelectAll_triggered()
+{
+    ui->textEdit->selectAll();
+}
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    if(userEditConfirmed())
+        exit(0);
 }
 

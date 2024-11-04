@@ -13,5 +13,10 @@
         <file>image/undo.svg</file>
         <file>image/find.svg</file>
         <file>image/replace.svg</file>
+        <file>image/linewrap.svg</file>
+        <file>image/textfont.svg</file>
+        <file>image/toolbox.svg</file>
+        <file>image/showstatus.svg</file>
+        <file>image/showtool.svg</file>
     </qresource>
 </RCC>
