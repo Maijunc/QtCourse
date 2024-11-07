@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->addPermanentWidget(&statusLabel);
 
     this->statusCursorLabel.setMaximumWidth(150);
-    this->statusCursorLabel.setText("Row: " + QString::number(0) + "    Col: " + QString::number(1));
+    this->statusCursorLabel.setText("Row: " + QString::number(1) + "    Col: " + QString::number(1));
     ui->statusbar->addPermanentWidget(&statusCursorLabel);
 
     QLabel *author = new QLabel(ui->statusbar);
@@ -171,6 +171,10 @@ void MainWindow::on_textEdit_textChanged()
         this->setWindowTitle("*" + this->windowTitle());
         textChanged = true;
     }
+
+    this->statusLabel.setText("length: " + QString::number(ui->textEdit->toPlainText().length()) +
+                              "    lines: " + QString::number(ui->textEdit->document()->lineCount()));
+
 }
 
 bool MainWindow::userEditConfirmed()
@@ -328,5 +332,25 @@ void MainWindow::on_actionExit_triggered()
 {
     if(userEditConfirmed())
         exit(0);
+}
+
+
+void MainWindow::on_textEdit_cursorPositionChanged()
+{
+    int col = 0;
+    int row = 0;
+    int flg = -1;
+    int pos = ui->textEdit->textCursor().position();
+    QString text = ui->textEdit->toPlainText();
+
+    for(int i = 0; i < pos; i++)
+        if(text[i] == '\n')
+        {
+            row++;
+            flg = i;
+        }
+    flg++;
+    col = pos - flg;
+    this->statusCursorLabel.setText("Row: " + QString::number(row + 1) + "    Col: " + QString::number(col + 1));
 }
 
