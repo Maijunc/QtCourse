@@ -28,7 +28,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QPlainTextEdit" name="textEdit"/>
+     <widget class="CodeEditor" name="textEdit"/>
     </item>
    </layout>
   </widget>
@@ -54,12 +54,23 @@
     <property name="title">
      <string>编辑(&amp;E)</string>
     </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionReplace"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectAll"/>
    </widget>
    <widget class="QMenu" name="menu_O">
     <property name="title">
      <string>格式(&amp;O)</string>
     </property>
     <addaction name="actionLineWrap"/>
+    <addaction name="actionFont"/>
     <addaction name="actionFontColor"/>
     <addaction name="separator"/>
     <addaction name="actionFontBackgroundColor"/>
@@ -225,7 +236,7 @@
      <normaloff>:/image/redo.svg</normaloff>:/image/redo.svg</iconset>
    </property>
    <property name="text">
-    <string>重做(&amp;R)</string>
+    <string>恢复(&amp;R)</string>
    </property>
    <property name="toolTip">
     <string>重做操作</string>
@@ -448,6 +459,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">codeeditor.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="src.qrc"/>
  </resources>
