@@ -94,4 +94,18 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 }
 
 
+void CodeEditor::showLineNumberArea(bool flag)
+{
+    if(flag)
+    {
+        lineNumberArea->show();
+        setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+    }
+    else
+    {
+        lineNumberArea->hide();
+        setViewportMargins(0, 0, 0, 0);
+    }
+}
+
 

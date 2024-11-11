@@ -39,6 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionLineWrap->setChecked(true);
     }
 
+    ui->actionShowLineNumber->setChecked(true);
+
+    // connect(ui->actionShowLineNumber, SIGNAL(triggered(bool)), ui->textEdit, SLOT(hideLineNumber()))
+
 }
 
 MainWindow::~MainWindow()
@@ -352,5 +356,11 @@ void MainWindow::on_textEdit_cursorPositionChanged()
     flg++;
     col = pos - flg;
     this->statusCursorLabel.setText("Row: " + QString::number(row + 1) + "    Col: " + QString::number(col + 1));
+}
+
+
+void MainWindow::on_actionShowLineNumber_triggered(bool checked)
+{
+    ui->textEdit->showLineNumberArea(checked);
 }
 

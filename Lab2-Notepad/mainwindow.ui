@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>776</width>
+    <width>791</width>
     <height>600</height>
    </rect>
   </property>
@@ -37,7 +37,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>776</width>
+     <width>791</width>
      <height>36</height>
     </rect>
    </property>
@@ -70,6 +70,7 @@
      <string>格式(&amp;O)</string>
     </property>
     <addaction name="actionLineWrap"/>
+    <addaction name="actionShowLineNumber"/>
     <addaction name="actionFont"/>
     <addaction name="actionFontColor"/>
     <addaction name="separator"/>
@@ -121,7 +122,9 @@
    <addaction name="actionReplace"/>
    <addaction name="separator"/>
    <addaction name="actionFont"/>
+   <addaction name="actionShowLineNumber"/>
    <addaction name="actionLineWrap"/>
+   <addaction name="separator"/>
    <addaction name="actionShowToolBar"/>
    <addaction name="actionShowStatusBar"/>
   </widget>
@@ -453,6 +456,27 @@
    </property>
    <property name="toolTip">
     <string>退出</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionShowLineNumber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="src.qrc">
+     <normaloff>:/image/showlinenumber.svg</normaloff>:/image/showlinenumber.svg</iconset>
+   </property>
+   <property name="text">
+    <string>显示行号(&amp;L)</string>
+   </property>
+   <property name="toolTip">
+    <string>显示行号</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

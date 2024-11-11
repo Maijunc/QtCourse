@@ -18,5 +18,6 @@
         <file>image/toolbox.svg</file>
         <file>image/showstatus.svg</file>
         <file>image/showtool.svg</file>
+        <file>image/showlinenumber.svg</file>
     </qresource>
 </RCC>
