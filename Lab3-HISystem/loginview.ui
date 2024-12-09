@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>登陆</string>
+   <string>登录</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -115,7 +115,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="inputUserPassword"/>
+          <widget class="QLineEdit" name="inputUserPassword">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

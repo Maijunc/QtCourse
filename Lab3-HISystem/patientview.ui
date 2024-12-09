@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>507</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,12 +17,20 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="txtSearch"/>
+      <widget class="QLineEdit" name="txtSearch">
+       <property name="placeholderText">
+        <string>请输入姓名进行查找</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btSearch">
        <property name="text">
         <string>查找</string>
+       </property>
+       <property name="icon">
+        <iconset resource="lab3.qrc">
+         <normaloff>:/image/search.svg</normaloff>:/image/search.svg</iconset>
        </property>
       </widget>
      </item>
@@ -31,6 +39,10 @@
        <property name="text">
         <string>添加</string>
        </property>
+       <property name="icon">
+        <iconset resource="lab3.qrc">
+         <normaloff>:/image/add.svg</normaloff>:/image/add.svg</iconset>
+       </property>
       </widget>
      </item>
      <item>
@@ -38,12 +50,20 @@
        <property name="text">
         <string>删除</string>
        </property>
+       <property name="icon">
+        <iconset resource="lab3.qrc">
+         <normaloff>:/image/delete.svg</normaloff>:/image/delete.svg</iconset>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btEdit">
        <property name="text">
         <string>修改</string>
+       </property>
+       <property name="icon">
+        <iconset resource="lab3.qrc">
+         <normaloff>:/image/edit.svg</normaloff>:/image/edit.svg</iconset>
        </property>
       </widget>
      </item>
@@ -54,6 +74,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="lab3.qrc"/>
+ </resources>
  <connections/>
 </ui>

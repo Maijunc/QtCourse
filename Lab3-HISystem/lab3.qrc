@@ -3,5 +3,9 @@
         <file>image/back.svg</file>
         <file>image/login.svg</file>
         <file>image/logout.svg</file>
+        <file>image/add.svg</file>
+        <file>image/delete.svg</file>
+        <file>image/edit.svg</file>
+        <file>image/search.svg</file>
     </qresource>
 </RCC>
