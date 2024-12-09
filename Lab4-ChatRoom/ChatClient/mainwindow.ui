@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>聊天室客户端</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#titleLable{
@@ -49,17 +49,17 @@ border-radius:25px;
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="loginPage">
+      <widget class="QWidget" name="chatPage">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QTextEdit" name="textEdit"/>
+           <widget class="QTextEdit" name="roomTextEdit"/>
           </item>
           <item>
-           <widget class="QListWidget" name="listWidget">
+           <widget class="QListWidget" name="userListWidget">
             <property name="maximumSize">
              <size>
               <width>120</width>
@@ -73,7 +73,7 @@ border-radius:25px;
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="sayLineEdit"/>
           </item>
           <item>
            <widget class="QPushButton" name="saveButton">
@@ -93,7 +93,7 @@ border-radius:25px;
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="charPage">
+      <widget class="QWidget" name="loginPage">
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="1" column="0">
          <spacer name="horizontalSpacer">
