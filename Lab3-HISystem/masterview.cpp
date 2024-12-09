@@ -10,6 +10,8 @@ MasterView::MasterView(QWidget *parent)
     this->setWindowFlag(Qt::FramelessWindowHint);
 
     goLoginView();
+
+    IDatabase::getInstance();
 }
 
 MasterView::~MasterView()
@@ -19,7 +21,7 @@ MasterView::~MasterView()
 
 void MasterView::goLoginView()
 {
-    qDebug() << "goLoginView";
+    // qDebug() << "goLoginView";
     loginView = new LoginView(this);
     pushWidgetToStackView(loginView);
 
@@ -28,7 +30,7 @@ void MasterView::goLoginView()
 
 void MasterView::goWelcomeView()
 {
-    qDebug() << "goWelcomeView";
+    // qDebug() << "goWelcomeView";
     welcomeView = new WelcomeView(this);
     pushWidgetToStackView(welcomeView);
 
@@ -39,7 +41,7 @@ void MasterView::goWelcomeView()
 
 void MasterView::goDoctorView()
 {
-    qDebug() << "goDoctorView";
+    // qDebug() << "goDoctorView";
     doctorView = new DoctorView(this);
     pushWidgetToStackView(doctorView);
 
@@ -48,25 +50,27 @@ void MasterView::goDoctorView()
 
 void MasterView::goDepartmentView()
 {
-    qDebug() << "goDepartmentView";
+    // qDebug() << "goDepartmentView";
     departmentView = new DepartmentView(this);
     pushWidgetToStackView(departmentView);
 }
 
-void MasterView::goPatientEditView()
+void MasterView::goPatientEditView(int rowNum)
 {
-    qDebug() << "goPatientEditView";
-    patientEditView = new PatientEditView(this);
+    // qDebug() << "goPatientEditView";
+    patientEditView = new PatientEditView(this, rowNum);
     pushWidgetToStackView(patientEditView);
+
+    connect(patientEditView, SIGNAL(goPreviousView()), this, SLOT(goPreviousView()));
 }
 
 void MasterView::goPatientView()
 {
-    qDebug() << "goPatientView";
+    // qDebug() << "goPatientView";
     patientView = new PatientView(this);
     pushWidgetToStackView(patientView);
 
-    connect(patientView, SIGNAL(goPatientEditView()), this, SLOT(goPatientEditView()));
+    connect(patientView, SIGNAL(goPatientEditView(int)), this, SLOT(goPatientEditView(int)));
 }
 
 void MasterView::goPreviousView()

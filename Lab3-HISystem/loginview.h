@@ -2,6 +2,7 @@
 #define LOGINVIEW_H
 
 #include <QWidget>
+#include "idatabase.h"
 
 namespace Ui {
 class LoginView;

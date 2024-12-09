@@ -15,7 +15,9 @@ LoginView::~LoginView()
 
 void LoginView::on_btSignIn_clicked()
 {
-    emit loginSuccess();
+    QString status = IDatabase::getInstance().userLogin(ui->inputUserName->text(), ui->inputUserPassword->text());
+    if(status == "loginOK")
+        emit loginSuccess();
 
 }
 

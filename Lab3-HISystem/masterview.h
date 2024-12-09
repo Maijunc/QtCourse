@@ -9,6 +9,7 @@
 #include "patienteditview.h"
 #include "patientview.h"
 #include "welcomeview.h"
+#include "idatabase.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,7 +30,7 @@ public slots:
     void goWelcomeView();
     void goDoctorView();
     void goDepartmentView();
-    void goPatientEditView();
+    void goPatientEditView(int rowNum);
     void goPatientView();
     void goPreviousView();
 
