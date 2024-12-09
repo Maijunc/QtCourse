@@ -6,6 +6,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    m_chatServer = new ChatServer(this);
+
+    connect(m_chatServer, &ChatServer::logMessage, this, &MainWindow::logMessage);
 }
 
 MainWindow::~MainWindow()
@@ -15,16 +18,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_startStopButton_clicked()
 {
-    static bool started = false;
-    if (started) {
+    if(m_chatServer->isListening()) {
+        m_chatServer->stopServer();
         ui->startStopButton->setText("启动服务器");
-        logMessage("服务器已经停止");
+        logMessage("服务器已停止");
     } else {
-        ui->startStopButton->setText("停止服务器");
+        if(!m_chatServer->listen(QHostAddress::Any, 1967)) {
+            QMessageBox::critical(this, "错误", "无法启动服务器");
+            return;
+        }
         logMessage("服务器已经启动");
+        ui->startStopButton->setText("停止服务器");
     }
-
-    started = !started;
 }
 
 void MainWindow::logMessage(const QString &msg)
