@@ -57,7 +57,6 @@ void MasterView::goDepartmentView()
 
 void MasterView::goPatientEditView(int rowNum)
 {
-    // qDebug() << "goPatientEditView";
     patientEditView = new PatientEditView(this, rowNum);
     pushWidgetToStackView(patientEditView);
 

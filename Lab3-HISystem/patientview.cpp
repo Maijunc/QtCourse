@@ -22,7 +22,6 @@ PatientView::~PatientView()
 void PatientView::on_btAdd_clicked()
 {
     int curRow = IDatabase::getInstance().addNewPatient();
-    qDebug() << "curRow = " << curRow;
     emit goPatientEditView(curRow);
 }
 
@@ -49,8 +48,6 @@ void PatientView::on_btEdit_clicked()
         QMessageBox::warning(this, "警告", "请先选择一个患者进行编辑!");
         return;  // 不执行后续操作
     }
-
-    qDebug() << curIndex.row();
 
     emit goPatientEditView(curIndex.row());
 }
