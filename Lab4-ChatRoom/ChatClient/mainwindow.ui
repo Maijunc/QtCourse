@@ -76,7 +76,7 @@ border-radius:25px;
            <widget class="QLineEdit" name="sayLineEdit"/>
           </item>
           <item>
-           <widget class="QPushButton" name="saveButton">
+           <widget class="QPushButton" name="sayButton">
             <property name="text">
              <string>发送</string>
             </property>
