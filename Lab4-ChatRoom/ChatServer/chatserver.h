@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QJsonArray>
 #include "serverworker.h"
 
 class ChatServer : public QTcpServer
@@ -25,6 +26,7 @@ signals:
 public slots:
     void stopServer();
     void jsonReceived(ServerWorker *sender, const QJsonObject &docObj);
+    void userDisconnected(ServerWorker *sender);
 
 };
 

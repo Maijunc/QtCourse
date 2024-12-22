@@ -16,9 +16,9 @@ public:
 signals:
     void connected();
     void messageReceived(const QString &text);
+    void jsonReceived(const QJsonObject &docObj);
 
 private:
-    //
     QTcpSocket * m_clientSocket;
 
 public slots:
@@ -26,6 +26,9 @@ public slots:
     void sendMessage(const QString &text, const QString &type = "message");
     // 连接到服务器
     void connectToServer(const QHostAddress &address, quint16 port);
+
+    void disconnectFromHost();
+
 };
 
 #endif // CHATCLIENT_H
