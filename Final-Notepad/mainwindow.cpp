@@ -131,11 +131,14 @@ void MainWindow::on_actionOpen_triggered()
     // if(!userEditConfirmed())
     //     return;
 
-    QString filePath = QFileDialog::getOpenFileName(this, "打开文件", ".", tr("C/C++ Files (*.c *.cpp *.h);;"
+    QString filePath = QFileDialog::getOpenFileName(this, "保存文件", ".", tr("Text Files (*.txt);;"
+                                                                              "C/C++ Files (*.c *.cpp *.h);;"
                                                                               "Python Files (*.py);;"
                                                                               "JavaScript Files (*.js);;"
                                                                               "HTML Files (*.html *.htm);;"
-                                                                              "Text Files (*.txt)"));
+                                                                              "Java Files (*.java);;"
+                                                                              "All Files (*.*)"));
+
     QFile file(filePath);
 
     if(!file.open(QFile::ReadOnly | QFile::Text))
@@ -169,6 +172,8 @@ void MainWindow::on_actionOpen_triggered()
         getCurrentEditor()->getHighlighter()->setLanguage("JavaScript");
     } else if (extension == "html" || extension == "htm") {
         getCurrentEditor()->getHighlighter()->setLanguage("HTML");
+    } else if (extension == "java") {
+        getCurrentEditor()->getHighlighter()->setLanguage("Java");
     } else {
         getCurrentEditor()->getHighlighter()->setLanguage("PlainText");
     }
@@ -186,30 +191,34 @@ void MainWindow::on_actionSave_triggered()
 
     if(filePath == "")
     {
-        QString fileName = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("C/C++ Files (*.c *.cpp *.h);;"
+        QString filePath = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("Text Files (*.txt);;"
+                                                                                  "C/C++ Files (*.c *.cpp *.h);;"
                                                                                   "Python Files (*.py);;"
                                                                                   "JavaScript Files (*.js);;"
                                                                                   "HTML Files (*.html *.htm);;"
-                                                                                  "Text Files (*.txt)"));
+                                                                                  "Java Files (*.java);;"
+                                                                                  "All Files (*.*)"));
 
-        file.setFileName(fileName);
+
+        file.setFileName(filePath);
         if(!file.open(QFile::WriteOnly | QFile::Text))
         {
             QMessageBox::warning(this, ".." , "保存文件失败");
             return;
         }
         // m_filePath = fileName;
-        editor->setProperty("filePath", fileName);
+        editor->setProperty("filePath", filePath);
 
-        this->setWindowTitle(editor->property("filePath").toString());
-        QTabWidget *tabWidget = ui->textTabWidget;
-        tabWidget->setTabText(tabWidget->currentIndex(), getFileNameFromPath(editor->property("filePath").toString()));
     }
     else if(!file.open(QFile::WriteOnly | QFile::Text))
     {
         QMessageBox::warning(this, ".." , "保存文件失败");
         return;
     }
+
+    this->setWindowTitle(editor->property("filePath").toString());
+    QTabWidget *tabWidget = ui->textTabWidget;
+    tabWidget->setTabText(tabWidget->currentIndex(), getFileNameFromPath(editor->property("filePath").toString()));
 
     QTextStream out(&file);
 
@@ -226,12 +235,13 @@ void MainWindow::on_actionSaveAs_triggered()
 {
     CodeEditor* editor = getCurrentEditor();
 
-    QString filePath = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("All Files (*.*);;"
+    QString filePath = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("Text Files (*.txt);;"
                                                                               "C/C++ Files (*.c *.cpp *.h);;"
                                                                               "Python Files (*.py);;"
                                                                               "JavaScript Files (*.js);;"
                                                                               "HTML Files (*.html *.htm);;"
-                                                                              "Text Files (*.txt)"));
+                                                                              "Java Files (*.java);;"
+                                                                              "All Files (*.*)"));
 
     QFile file(filePath);
     if(!file.open(QFile::WriteOnly | QFile::Text))
@@ -266,9 +276,12 @@ void MainWindow::on_actionSaveAs_triggered()
         getCurrentEditor()->getHighlighter()->setLanguage("JavaScript");
     } else if (extension == "html" || extension == "htm") {
         getCurrentEditor()->getHighlighter()->setLanguage("HTML");
+    } else if (extension == "java") {
+        getCurrentEditor()->getHighlighter()->setLanguage("Java");
     } else {
         getCurrentEditor()->getHighlighter()->setLanguage("PlainText");
     }
+
 
 }
 

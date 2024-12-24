@@ -33,6 +33,7 @@ private:
     void setupPythonRules();
     void setupJavaScriptRules();
     void setupHtmlRules();
+    void setupJavaRules();
     void clearRules();
 };
 
