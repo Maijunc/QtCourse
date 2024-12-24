@@ -53,11 +53,11 @@ private slots:
 
     void on_actionPaste_triggered();
 
-    // void on_textEdit_copyAvailable(bool b);
+    void on_textEdit_copyAvailable(bool b);
 
-    // void on_textEdit_undoAvailable(bool b);
+    void on_textEdit_undoAvailable(bool b);
 
-    // void on_textEdit_redoAvailable(bool b);
+    void on_textEdit_redoAvailable(bool b);
 
     void on_actionFontColor_triggered();
 
@@ -83,6 +83,8 @@ private slots:
 
     void on_textTabWidget_currentChanged(int index);
 
+    void on_actionToggleTheme_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -104,5 +106,7 @@ private:
     void createTab(QString tabName);
 
     QString getFileNameFromPath(QString filePath);
+
+    void toggleTheme(bool darkMode);
 };
 #endif // MAINWINDOW_H

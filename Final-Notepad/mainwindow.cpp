@@ -131,7 +131,11 @@ void MainWindow::on_actionOpen_triggered()
     // if(!userEditConfirmed())
     //     return;
 
-    QString filePath = QFileDialog::getOpenFileName(this, "打开文件", ".", tr("Text files (*.txt) ;; All (*.*)"));
+    QString filePath = QFileDialog::getOpenFileName(this, "打开文件", ".", tr("C/C++ Files (*.c *.cpp *.h);;"
+                                                                              "Python Files (*.py);;"
+                                                                              "JavaScript Files (*.js);;"
+                                                                              "HTML Files (*.html *.htm);;"
+                                                                              "Text Files (*.txt)"));
     QFile file(filePath);
 
     if(!file.open(QFile::ReadOnly | QFile::Text))
@@ -139,8 +143,8 @@ void MainWindow::on_actionOpen_triggered()
         QMessageBox::warning(this, "..", "打开文件失败");
         return;
     }
-
-    createTab(getFileNameFromPath(filePath));
+    QString fileName = getFileNameFromPath(filePath);
+    createTab(fileName);
 
     // 获取当前文本编辑
     CodeEditor *editor = getCurrentEditor();
@@ -152,8 +156,23 @@ void MainWindow::on_actionOpen_triggered()
 
     this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
 
-    getCurrentEditor()->setProperty("textChanged", false);
+    editor->setProperty("textChanged", false);
     editor->setProperty("filePath", filePath);
+
+    // 设置语法高亮语言
+    QString extension = QFileInfo(fileName).suffix().toLower();
+    if (extension == "cpp" || extension == "c" || extension == "h") {
+        getCurrentEditor()->getHighlighter()->setLanguage("C++");
+    } else if (extension == "py") {
+        getCurrentEditor()->getHighlighter()->setLanguage("Python");
+    } else if (extension == "js") {
+        getCurrentEditor()->getHighlighter()->setLanguage("JavaScript");
+    } else if (extension == "html" || extension == "htm") {
+        getCurrentEditor()->getHighlighter()->setLanguage("HTML");
+    } else {
+        getCurrentEditor()->getHighlighter()->setLanguage("PlainText");
+    }
+
 }
 
 
@@ -167,7 +186,11 @@ void MainWindow::on_actionSave_triggered()
 
     if(filePath == "")
     {
-        QString fileName = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("Text files (*.txt) "));
+        QString fileName = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("C/C++ Files (*.c *.cpp *.h);;"
+                                                                                  "Python Files (*.py);;"
+                                                                                  "JavaScript Files (*.js);;"
+                                                                                  "HTML Files (*.html *.htm);;"
+                                                                                  "Text Files (*.txt)"));
 
         file.setFileName(fileName);
         if(!file.open(QFile::WriteOnly | QFile::Text))
@@ -203,16 +226,21 @@ void MainWindow::on_actionSaveAs_triggered()
 {
     CodeEditor* editor = getCurrentEditor();
 
-    QString fileName = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("Text files (*.txt) "));
+    QString filePath = QFileDialog::getSaveFileName(this, "保存文件", ".", tr("All Files (*.*);;"
+                                                                              "C/C++ Files (*.c *.cpp *.h);;"
+                                                                              "Python Files (*.py);;"
+                                                                              "JavaScript Files (*.js);;"
+                                                                              "HTML Files (*.html *.htm);;"
+                                                                              "Text Files (*.txt)"));
 
-    QFile file(fileName);
+    QFile file(filePath);
     if(!file.open(QFile::WriteOnly | QFile::Text))
     {
         QMessageBox::warning(this, ".." , "保存文件失败");
         return;
     }
 
-    getCurrentEditor()->setProperty("filePath", fileName);
+    getCurrentEditor()->setProperty("filePath", filePath);
     // m_filePath = fileName;
 
     QTextStream out(&file);
@@ -221,11 +249,27 @@ void MainWindow::on_actionSaveAs_triggered()
     file.flush();
     file.close();
 
+    QString fileName = getFileNameFromPath(filePath);
+
     this->setWindowTitle(editor->property("filePath").toString());
     QTabWidget *tabWidget = ui->textTabWidget;
     tabWidget->setTabText(tabWidget->currentIndex(), getFileNameFromPath(editor->property("filePath").toString()));
 
     this->setWindowTitle(QFileInfo(getCurrentEditor()->property("filePath").toString()).absoluteFilePath());
+
+    QString extension = QFileInfo(fileName).suffix().toLower();
+    if (extension == "cpp" || extension == "c" || extension == "h") {
+        getCurrentEditor()->getHighlighter()->setLanguage("C++");
+    } else if (extension == "py") {
+        getCurrentEditor()->getHighlighter()->setLanguage("Python");
+    } else if (extension == "js") {
+        getCurrentEditor()->getHighlighter()->setLanguage("JavaScript");
+    } else if (extension == "html" || extension == "htm") {
+        getCurrentEditor()->getHighlighter()->setLanguage("HTML");
+    } else {
+        getCurrentEditor()->getHighlighter()->setLanguage("PlainText");
+    }
+
 }
 
 
@@ -343,6 +387,11 @@ void MainWindow::createTab(QString tabName)
 
     connect(editor, &QPlainTextEdit::textChanged, this, &MainWindow::on_textEdit_textChanged);
 
+    connect(editor, &QPlainTextEdit::copyAvailable, this, &MainWindow::on_textEdit_copyAvailable);
+
+    connect(editor, &QPlainTextEdit::undoAvailable, this, &MainWindow::on_textEdit_undoAvailable);
+
+    connect(editor, &QPlainTextEdit::redoAvailable, this, &MainWindow::on_textEdit_redoAvailable);
 }
 
 QString MainWindow::getFileNameFromPath(QString filePath)
@@ -354,6 +403,22 @@ QString MainWindow::getFileNameFromPath(QString filePath)
     QString fileName = fileInfo.fileName();
 
     return fileName;
+}
+
+void MainWindow::toggleTheme(bool darkMode) {
+    QString theme = darkMode ? "dark" : "light";
+
+    // 遍历所有 CodeEditor 实例，应用新主题
+    foreach (CodeEditor *editor, findChildren<CodeEditor *>()) {
+        editor->applyTheme(theme);
+    }
+
+    // 设置全局样式
+    if (darkMode) {
+        qApp->setStyleSheet("QMainWindow { background-color: #2E2E2E; color: #FFFFFF; }");
+    } else {
+        qApp->setStyleSheet("QMainWindow { background-color: #FFFFFF; color: #000000; }");
+    }
 }
 
 
@@ -394,23 +459,23 @@ void MainWindow::on_actionPaste_triggered()
 }
 
 
-// void MainWindow::on_textEdit_copyAvailable(bool b)
-// {
-//     ui->actionCopy->setEnabled(b);
-//     ui->actionCut->setEnabled(b);
-// }
+void MainWindow::on_textEdit_copyAvailable(bool b)
+{
+    ui->actionCopy->setEnabled(b);
+    ui->actionCut->setEnabled(b);
+}
 
 
-// void MainWindow::on_textEdit_undoAvailable(bool b)
-// {
-//     ui->actionUndo->setEnabled(b);
-// }
+void MainWindow::on_textEdit_undoAvailable(bool b)
+{
+    ui->actionUndo->setEnabled(b);
+}
 
 
-// void MainWindow::on_textEdit_redoAvailable(bool b)
-// {
-//     ui->actionRedo->setEnabled(b);
-// }
+void MainWindow::on_textEdit_redoAvailable(bool b)
+{
+    ui->actionRedo->setEnabled(b);
+}
 
 
 void MainWindow::on_actionFontColor_triggered()
@@ -566,5 +631,13 @@ void MainWindow::on_textTabWidget_currentChanged(int index)
     QTabWidget *tabWidget = ui->textTabWidget;
 
     this->setWindowTitle(tabWidget->widget(index)->property("filePath").toString() == "" ? "untitle" : tabWidget->widget(index)->property("filePath").toString());
+}
+
+
+void MainWindow::on_actionToggleTheme_triggered()
+{
+    static bool darkMode = false; // 默认浅色模式
+    darkMode = !darkMode;
+    toggleTheme(darkMode);
 }
 

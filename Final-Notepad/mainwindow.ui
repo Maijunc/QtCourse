@@ -80,6 +80,7 @@
     <addaction name="separator"/>
     <addaction name="actionFontBackgroundColor"/>
     <addaction name="actionBackgroundColor"/>
+    <addaction name="actionToggleTheme"/>
    </widget>
    <widget class="QMenu" name="menu_V">
     <property name="title">
@@ -481,6 +482,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionToggleTheme">
+   <property name="icon">
+    <iconset resource="src.qrc">
+     <normaloff>:/image/logo.svg</normaloff>:/image/logo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>切换主题(&amp;T)</string>
+   </property>
+   <property name="toolTip">
+    <string>切换主题</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

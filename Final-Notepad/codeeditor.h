@@ -5,6 +5,7 @@
 #include <QPlainTextEdit>
 #include <QPainter>
 #include <QTextBlock>
+#include "syntaxhighlighter.h"
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -15,6 +16,8 @@ public:
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
+    SyntaxHighlighter *getHighlighter();
+    void applyTheme(const QString &theme);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -29,6 +32,10 @@ public slots:
 
 private:
     QWidget *lineNumberArea;
+    SyntaxHighlighter *m_syntaxHighlighter;
+
+    QColor m_currentLineColor; // 当前行高亮颜色
+
 };
 
 class LineNumberArea : public QWidget
@@ -50,6 +57,7 @@ protected:
 
 private:
     CodeEditor *codeEditor;
+
 };
 
 #endif // CODEEDITOR_H
