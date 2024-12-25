@@ -359,9 +359,9 @@ CodeEditor *MainWindow::getCurrentEditor()
     // QWidget *currentTab = tabWidget->currentWidget();
     // CodeEditor *editor = currentTab->findChild<CodeEditor *>();
     CodeEditor *editor = qobject_cast<CodeEditor *>(tabWidget->currentWidget());
-    if (editor) {
-        qDebug() << "当前选项卡的 CodeEditor" << editor;
-    }
+    // if (editor) {
+    //     qDebug() << "当前选项卡的 CodeEditor" << editor;
+    // }
     return editor;
 }
 

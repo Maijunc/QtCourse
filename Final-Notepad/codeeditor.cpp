@@ -14,6 +14,47 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+
+    setMouseTracking(true);
+}
+
+void CodeEditor::mousePressEvent(QMouseEvent* e)
+{
+    QPlainTextEdit::mousePressEvent(e);
+
+    if (e->button() != Qt::LeftButton)
+        return;
+
+    // 使用 QRegularExpression 来匹配 URL
+    QRegularExpression urlRex("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?");
+
+    // 获取鼠标点击的位置
+    QTextCursor cursor = textCursor();
+    QString str = cursor.block().text();
+    int blockPos = cursor.positionInBlock();
+
+    // 查找匹配的链接
+    int pos = 0;
+    while (pos < str.length()) {
+        QRegularExpressionMatch match = urlRex.match(str.mid(pos));
+
+        if (match.hasMatch()) {
+            int matchStart = match.capturedStart();
+            int matchLength = match.capturedLength();
+
+            // 如果点击位置在链接内，打开链接
+            if (blockPos - matchStart < matchLength) {
+                QString urlStr = str.mid(matchStart, matchLength);
+                QUrl url(urlStr);
+                QDesktopServices::openUrl(url);
+                break;
+            }
+
+            pos += matchLength;
+        } else {
+            break;
+        }
+    }
 }
 
 // calculates the width of the LineNumberArea widget

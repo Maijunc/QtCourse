@@ -5,6 +5,7 @@
 #include <QPlainTextEdit>
 #include <QPainter>
 #include <QTextBlock>
+#include <QDesktopServices>
 #include "syntaxhighlighter.h"
 
 class CodeEditor : public QPlainTextEdit
@@ -22,6 +23,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
+    void mousePressEvent(QMouseEvent *e);
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
