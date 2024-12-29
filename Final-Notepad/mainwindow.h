@@ -7,10 +7,12 @@
 #include "searchdialog.h"
 #include "replacedialog.h"
 #include "codeeditor.h"
+#include "favoritesmanager.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QInputDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -87,6 +89,8 @@ private slots:
 
     void on_actionCheckBookmarks_triggered();
 
+    void addFavorite();
+    void openFavorite();
 private:
     Ui::MainWindow *ui;
 
@@ -110,5 +114,10 @@ private:
     QString getFileNameFromPath(QString filePath);
 
     void toggleTheme(bool darkMode);
+
+    FavoritesManager favoritesManager;
+    QMenu *favoritesMenu;
+    void updateFavoritesMenu();
+    void manageFavorites();
 };
 #endif // MAINWINDOW_H

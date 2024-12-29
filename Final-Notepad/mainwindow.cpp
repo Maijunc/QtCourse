@@ -31,32 +31,27 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionShowToolBar->setChecked(true);
     ui->actionShowStatusBar->setChecked(true);
 
-    // QTabWidget* tabWidget = ui->textTabWidget;
-
-    // // 创建一个新的 CodeEditor
-    // CodeEditor *editor = new CodeEditor;
-
-    // // 将 CodeEditor 放到 QWidget 中
-    // QWidget *tab = new QWidget;
-    // QVBoxLayout *layout = new QVBoxLayout(tab);
-    // layout->addWidget(editor);
-    // tab->setLayout(layout);
-
-    // // 添加到 TabWidget，并设置标题
-    // tabWidget->addTab(tab, "新建文本文件 - 编辑器");
-
-    // // 设置焦点到新选项卡的编辑器
-    // tabWidget->setCurrentWidget(tab);
-    // editor->setFocus();
-
-    // 创建一个新的tab
-    // createTab(QString("新建文本文件"));
-
     CodeEditor *editor = getCurrentEditor();
 
     updateEditMode(editor);
-    // connect(ui->actionShowLineNumber, SIGNAL(triggered(bool)), ui->textEdit, SLOT(hideLineNumber()))
 
+
+    favoritesManager.loadFavorites();
+
+    // 创建菜单
+    QMenuBar *menuBar = this->menuBar();
+    favoritesMenu = menuBar->addMenu("收藏夹");
+
+    QAction *addFavoriteAction = new QAction("添加到收藏夹", this);
+    connect(addFavoriteAction, &QAction::triggered, this, &MainWindow::addFavorite);
+    favoritesMenu->addAction(addFavoriteAction);
+
+    favoritesMenu->addSeparator();
+    updateFavoritesMenu();
+
+    QAction *manageFavoritesAction = new QAction("管理收藏夹", this);
+    connect(manageFavoritesAction, &QAction::triggered, this, &MainWindow::manageFavorites);
+    favoritesMenu->addAction(manageFavoritesAction);
 
 }
 
@@ -64,6 +59,74 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+void MainWindow::addFavorite() {
+    QString filePath = QFileDialog::getOpenFileName(this, "选择文件");
+    if (!filePath.isEmpty()) {
+        favoritesManager.addFavorite(filePath);
+        favoritesManager.saveFavorites();
+        updateFavoritesMenu();
+    }
+}
+
+void MainWindow::openFavorite() {
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        QString filePath = action->data().toString();
+        if (!QFile::exists(filePath)) {
+            QMessageBox::warning(this, "错误", "文件不存在：" + filePath);
+        } else {
+            // 打开文件逻辑
+        }
+    }
+}
+void MainWindow::updateFavoritesMenu() {
+    // 清除旧的动态动作
+    QList<QAction *> oldActions = favoritesMenu->actions();
+    for (QAction *action : oldActions) {
+        if (action->text() != "添加到收藏夹") {
+            favoritesMenu->removeAction(action);
+            delete action;
+        }
+    }
+
+    // 添加新的收藏项
+    for (const QString &path : favoritesManager.getFavorites()) {
+        QAction *favoriteAction = new QAction(path, this);
+        favoriteAction->setData(path);
+
+        // 点击打开文件
+        connect(favoriteAction, &QAction::triggered, this, &MainWindow::openFavorite);
+
+        // 添加到菜单中，并为右键删除添加自定义菜单
+        QMenu *subMenu = new QMenu(path, favoritesMenu);
+        QAction *deleteAction = new QAction("删除", subMenu);
+        subMenu->addAction(deleteAction);
+
+        connect(deleteAction, &QAction::triggered, this, [=]() {
+            favoritesManager.removeFavorite(path);
+            favoritesManager.saveFavorites();
+            updateFavoritesMenu(); // 更新菜单
+        });
+
+        // 使用子菜单代替普通 QAction
+        favoritesMenu->addMenu(subMenu);
+    }
+}
+
+
+void MainWindow::manageFavorites() {
+    QList<QString> favorites = favoritesManager.getFavorites();
+    QString pathToDelete = QInputDialog::getItem(this, "删除收藏", "选择要删除的路径：", favorites, 0, false);
+
+    if (!pathToDelete.isEmpty()) {
+        favoritesManager.removeFavorite(pathToDelete);
+        favoritesManager.saveFavorites();
+        updateFavoritesMenu();
+    }
+}
+
 
 void MainWindow::on_actionAbout_triggered()
 {
