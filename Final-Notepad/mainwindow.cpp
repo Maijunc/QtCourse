@@ -92,33 +92,6 @@ void MainWindow::on_actionReplace_triggered()
 
 void MainWindow::on_actionNew_triggered()
 {
-    // 弹出对话框问用户是否需要保存
-    // if(!userEditConfirmed())
-    //     return;
-
-    // 获取 TabWidget
-    // QTabWidget* tabWidget = ui->textTabWidget;
-
-    // // 创建一个新的 QTextEdit 编辑器
-    // CodeEditor *editor = new CodeEditor;
-
-    // // 将编辑器放入一个 QWidget 中
-    // QWidget *tab = new QWidget;
-    // QVBoxLayout *layout = new QVBoxLayout(tab);
-    // layout->addWidget(editor);
-    // tab->setLayout(layout);
-
-    // // 添加新选项卡
-    // int newIndex = tabWidget->addTab(tab, QString("Untitled"));
-
-    // // 设置新选项卡为当前选项卡
-    // tabWidget->setCurrentIndex(newIndex);
-
-    // // 设置焦点到新编辑器
-    // editor->setFocus();
-
-    // this->setWindowTitle("Untitled");
-
     createTab(QString("untitled"));
 
     // textChanged = false;
@@ -313,6 +286,7 @@ bool MainWindow::userEditConfirmed()
 {
     CodeEditor* editor = getCurrentEditor();
     bool textChanged = editor->property("textChanged").toBool();
+    // qDebug() << "userEditConfirmed " << "textChanged = " << textChanged;
     QString filePath = editor->property("filePath").toString();
 
     if(textChanged) {
@@ -330,7 +304,7 @@ bool MainWindow::userEditConfirmed()
                 on_actionSave_triggered();
                 break;
             case QMessageBox::No:
-                textChanged = false;
+                editor->setProperty("textChanged", false);
                 break;
             case QMessageBox::Cancel:
                 return false;
@@ -343,7 +317,7 @@ void MainWindow::updateEditMode(CodeEditor *editor)
 {
     QPlainTextEdit::LineWrapMode mode = editor->lineWrapMode();
 
-    if(mode == QTextEdit::NoWrap) {
+    if(mode == QPlainTextEdit::NoWrap) {
         ui->actionLineWrap->setChecked(false);
     } else {
         ui->actionLineWrap->setChecked(true);
@@ -372,12 +346,6 @@ void MainWindow::createTab(QString tabName)
 
     // 创建一个新的 QTextEdit 编辑器
     CodeEditor *editor = new CodeEditor;
-
-    // // 将编辑器放入一个 QWidget 中
-    // QWidget *tab = new QWidget;
-    // QVBoxLayout *layout = new QVBoxLayout(tab);
-    // layout->addWidget(editor);
-    // tab->setLayout(layout);
 
     // 添加新选项卡
     int newIndex = tabWidget->addTab(editor, tabName);
@@ -580,26 +548,6 @@ void MainWindow::on_actionExit_triggered()
         exit(0);
 }
 
-
-// void MainWindow::on_textEdit_cursorPositionChanged()
-// {
-//     int col = 0;
-//     int row = 0;
-//     int flg = -1;
-//     int pos = ui->textEdit->textCursor().position();
-//     QString text = ui->textEdit->toPlainText();
-
-//     for(int i = 0; i < pos; i++)
-//         if(text[i] == '\n')
-//         {
-//             row++;
-//             flg = i;
-//         }
-//     flg++;
-//     col = pos - flg;
-//     this->statusCursorLabel.setText("Row: " + QString::number(row + 1) + "    Col: " + QString::number(col + 1));
-// }
-
 void MainWindow::on_textEdit_cursorPositionChanged() {
     // 获取信号的发送者
     CodeEditor *editor = qobject_cast<CodeEditor *>(sender());
@@ -628,9 +576,6 @@ void MainWindow::on_textEdit_cursorPositionChanged() {
     this->statusCursorLabel.setText("Row: " + QString::number(row + 1) + "    Col: " + QString::number(col + 1));
 }
 
-
-
-
 void MainWindow::on_actionShowLineNumber_triggered(bool checked)
 {
     CodeEditor *editor = getCurrentEditor();
@@ -652,5 +597,13 @@ void MainWindow::on_actionToggleTheme_triggered()
     static bool darkMode = false; // 默认浅色模式
     darkMode = !darkMode;
     toggleTheme(darkMode);
+}
+
+
+void MainWindow::on_actionCheckBookmarks_triggered()
+{
+    CodeEditor *editor = getCurrentEditor();
+
+    editor->showBookmarks();
 }
 

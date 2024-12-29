@@ -1,12 +1,19 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
+#include "syntaxhighlighter.h"
+
 #include <QObject>
 #include <QPlainTextEdit>
 #include <QPainter>
 #include <QTextBlock>
 #include <QDesktopServices>
-#include "syntaxhighlighter.h"
+#include <QToolTip>
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QListWidget>
+#include <QPushButton>
+#include <QMenu>
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -20,10 +27,14 @@ public:
     SyntaxHighlighter *getHighlighter();
     void applyTheme(const QString &theme);
 
+    void toggleBookmark(int lineNumber);
+
+    QSet<int> getBookMarks();
+    void showBookmarks();
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
-    void mousePressEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e) override;
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
@@ -37,14 +48,16 @@ private:
     SyntaxHighlighter *m_syntaxHighlighter;
 
     QColor m_currentLineColor; // 当前行高亮颜色
-
+    QSet<int> m_Bookmarks; // 存储有书签的行号
 };
 
 class LineNumberArea : public QWidget
 {
 public:
     LineNumberArea(CodeEditor *editor) : QWidget(editor), codeEditor(editor)
-    {}
+    {
+        setMouseTracking(true); // 启用鼠标追踪
+    }
 
     QSize sizeHint() const override
     {
@@ -57,8 +70,11 @@ protected:
         codeEditor->lineNumberAreaPaintEvent(event);
     }
 
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
 private:
     CodeEditor *codeEditor;
+
 
 };
 

@@ -85,6 +85,8 @@ private slots:
 
     void on_actionToggleTheme_triggered();
 
+    void on_actionCheckBookmarks_triggered();
+
 private:
     Ui::MainWindow *ui;
 
