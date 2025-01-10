@@ -33,6 +33,7 @@ public:
     void showBookmarks();
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
 
     void mousePressEvent(QMouseEvent *e) override;
 private slots:
@@ -49,6 +50,7 @@ private:
 
     QColor m_currentLineColor; // 当前行高亮颜色
     QSet<int> m_Bookmarks; // 存储有书签的行号
+    void highlightLinks();
 };
 
 class LineNumberArea : public QWidget

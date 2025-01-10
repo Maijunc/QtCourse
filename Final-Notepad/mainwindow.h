@@ -119,5 +119,17 @@ private:
     QMenu *favoritesMenu;
     void updateFavoritesMenu();
     void manageFavorites();
+
+    // 最近历史
+    QStringList recentFiles;
+    QMenu *recentFilesMenu;
+    const int maxRecentFiles = 10;
+
+    void loadRecentFiles();
+    void saveRecentFiles();
+    void updateRecentFilesMenu();
+    void addRecentFile(const QString &filePath);
+    void clearRecentFiles();
+    void openFile(QString filePath);
 };
 #endif // MAINWINDOW_H

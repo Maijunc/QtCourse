@@ -16,6 +16,8 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
     highlightCurrentLine();
 
     setMouseTracking(true);
+
+    highlightLinks();
 }
 void CodeEditor::showBookmarks() {
     QDialog *dialog = new QDialog(this);
@@ -127,7 +129,8 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
         return;
 
     // 使用 QRegularExpression 来匹配 URL
-    QRegularExpression urlRex("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?");
+    QRegularExpression urlRex(
+        R"((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?|www\.[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?)");
 
     // 获取鼠标点击的位置
     QTextCursor cursor = textCursor();
@@ -144,16 +147,72 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
             int matchLength = match.capturedLength();
 
             // 如果点击位置在链接内，打开链接
-            if (blockPos - matchStart < matchLength) {
+            if (blockPos >= matchStart && blockPos <= matchStart + matchLength) {
                 QString urlStr = str.mid(matchStart, matchLength);
+
+                // 自动补全协议头
+                if (!urlStr.startsWith("http://") && !urlStr.startsWith("https://") && !urlStr.startsWith("ftp://")) {
+                    urlStr = "http://" + urlStr;
+                }
+
                 QUrl url(urlStr);
                 QDesktopServices::openUrl(url);
                 break;
             }
 
-            pos += matchLength;
+            pos += matchStart + matchLength;
         } else {
             break;
+        }
+    }
+}
+
+
+// 更新鼠标事件处理
+void CodeEditor::mouseMoveEvent(QMouseEvent *e)
+{
+    QPlainTextEdit::mouseMoveEvent(e);
+
+    // 使用正则表达式检测超链接
+    QRegularExpression urlRex("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?");
+    QTextCursor cursor = cursorForPosition(e->pos());
+    QString lineText = cursor.block().text();
+    int blockPos = cursor.positionInBlock();
+
+    // 查找链接
+    QRegularExpressionMatch match = urlRex.match(lineText);
+    if (match.hasMatch()) {
+        int matchStart = match.capturedStart();
+        int matchEnd = match.capturedEnd();
+
+        if (blockPos >= matchStart && blockPos <= matchEnd) {
+            setCursor(Qt::PointingHandCursor); // 改变光标形状
+            QToolTip::showText(e->globalPosition().toPoint(), "Ctrl+Click to open link");
+            return;
+        }
+    }
+
+    // 如果没有匹配，恢复默认光标
+    setCursor(Qt::IBeamCursor);
+    QToolTip::hideText();
+}
+
+// 高亮超链接
+void CodeEditor::highlightLinks()
+{
+    QRegularExpression urlRex("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?");
+    QTextDocument *doc = document();
+
+    QTextCursor cursor(doc);
+    cursor.movePosition(QTextCursor::Start);
+
+    while (!cursor.isNull() && !cursor.atEnd()) {
+        cursor = doc->find(urlRex, cursor);
+        if (!cursor.isNull()) {
+            QTextCharFormat linkFormat;
+            linkFormat.setForeground(Qt::blue);
+            linkFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+            cursor.mergeCharFormat(linkFormat);
         }
     }
 }

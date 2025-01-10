@@ -49,10 +49,13 @@ MainWindow::MainWindow(QWidget *parent)
     favoritesMenu->addSeparator();
     updateFavoritesMenu();
 
-    QAction *manageFavoritesAction = new QAction("管理收藏夹", this);
-    connect(manageFavoritesAction, &QAction::triggered, this, &MainWindow::manageFavorites);
-    favoritesMenu->addAction(manageFavoritesAction);
+    // QAction *manageFavoritesAction = new QAction("管理收藏夹", this);
+    // connect(manageFavoritesAction, &QAction::triggered, this, &MainWindow::manageFavorites);
+    // favoritesMenu->addAction(manageFavoritesAction);
 
+    recentFilesMenu = menuBar->addMenu("最近打开");
+    loadRecentFiles();
+    updateRecentFilesMenu();
 }
 
 MainWindow::~MainWindow()
@@ -77,10 +80,13 @@ void MainWindow::openFavorite() {
         if (!QFile::exists(filePath)) {
             QMessageBox::warning(this, "错误", "文件不存在：" + filePath);
         } else {
-            // 打开文件逻辑
+            openFile(filePath);
         }
+        // 读取文件并展示内容...
+        addRecentFile(filePath); // 添加到历史记录
     }
 }
+
 void MainWindow::updateFavoritesMenu() {
     // 清除旧的动态动作
     QList<QAction *> oldActions = favoritesMenu->actions();
@@ -93,27 +99,31 @@ void MainWindow::updateFavoritesMenu() {
 
     // 添加新的收藏项
     for (const QString &path : favoritesManager.getFavorites()) {
-        QAction *favoriteAction = new QAction(path, this);
-        favoriteAction->setData(path);
+        // 创建收藏项的菜单
+        QMenu *subMenu = new QMenu(QFileInfo(path).fileName(), favoritesMenu);
 
-        // 点击打开文件
-        connect(favoriteAction, &QAction::triggered, this, &MainWindow::openFavorite);
+        // 添加跳转按钮
+        QAction *openAction = new QAction("打开", subMenu);
+        openAction->setData(path);
+        connect(openAction, &QAction::triggered, this, &MainWindow::openFavorite);
 
-        // 添加到菜单中，并为右键删除添加自定义菜单
-        QMenu *subMenu = new QMenu(path, favoritesMenu);
+        // 添加删除按钮
         QAction *deleteAction = new QAction("删除", subMenu);
-        subMenu->addAction(deleteAction);
-
         connect(deleteAction, &QAction::triggered, this, [=]() {
             favoritesManager.removeFavorite(path);
             favoritesManager.saveFavorites();
-            updateFavoritesMenu(); // 更新菜单
+            updateFavoritesMenu();
         });
 
-        // 使用子菜单代替普通 QAction
+        // 将按钮添加到子菜单
+        subMenu->addAction(openAction);
+        subMenu->addAction(deleteAction);
+
+        // 添加子菜单到收藏夹菜单
         favoritesMenu->addMenu(subMenu);
     }
 }
+
 
 
 void MainWindow::manageFavorites() {
@@ -213,6 +223,9 @@ void MainWindow::on_actionOpen_triggered()
     } else {
         getCurrentEditor()->getHighlighter()->setLanguage("PlainText");
     }
+
+    // 读取文件并展示内容...
+    addRecentFile(filePath); // 添加到历史记录
 
 }
 
@@ -670,3 +683,92 @@ void MainWindow::on_actionCheckBookmarks_triggered()
     editor->showBookmarks();
 }
 
+void MainWindow::loadRecentFiles() {
+    QSettings settings("YourCompany", "YourApp");
+    recentFiles = settings.value("recentFiles").toStringList();
+}
+
+void MainWindow::saveRecentFiles() {
+    QSettings settings("YourCompany", "YourApp");
+    settings.setValue("recentFiles", recentFiles);
+}
+
+void MainWindow::addRecentFile(const QString &filePath) {
+    recentFiles.removeAll(filePath); // 移除重复路径
+    recentFiles.prepend(filePath);  // 添加到列表开头
+
+    if (recentFiles.size() > maxRecentFiles) {
+        recentFiles = recentFiles.mid(0, maxRecentFiles); // 限制大小
+    }
+
+    updateRecentFilesMenu(); // 更新菜单
+    saveRecentFiles();       // 保存到设置
+}
+
+void MainWindow::updateRecentFilesMenu() {
+    recentFilesMenu->clear();
+
+    for (const QString &filePath : recentFiles) {
+        QAction *action = new QAction(filePath, this);
+        connect(action, &QAction::triggered, [this, filePath]() {
+            // 打开文件逻辑
+            openFile(filePath);
+        });
+        recentFilesMenu->addAction(action);
+    }
+
+    if (!recentFiles.isEmpty()) {
+        recentFilesMenu->addSeparator();
+        QAction *clearAction = new QAction("清除历史记录", this);
+        connect(clearAction, &QAction::triggered, this, &MainWindow::clearRecentFiles);
+        recentFilesMenu->addAction(clearAction);
+    }
+}
+
+void MainWindow::clearRecentFiles() {
+    recentFiles.clear();
+    updateRecentFilesMenu();
+    saveRecentFiles();
+}
+
+
+void MainWindow::openFile(QString filePath)
+{
+    // 打开文件逻辑
+    QFile file(filePath);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "错误", "无法打开文件：" + filePath);
+        return;
+    }
+    QTextStream in(&file);
+    QString text = in.readAll();
+    file.close();
+
+    QString fileName = QFileInfo(filePath).fileName();
+    createTab(fileName);
+    CodeEditor *editor = getCurrentEditor();
+    editor->setPlainText(text);
+
+    // 设置文件属性
+    editor->setProperty("filePath", filePath);
+    editor->setProperty("textChanged", false);
+
+    // 更新窗口标题
+    this->setWindowTitle(filePath);
+
+    // 设置语法高亮语言
+    QString extension = QFileInfo(fileName).suffix().toLower();
+    if (extension == "cpp" || extension == "c" || extension == "h") {
+        editor->getHighlighter()->setLanguage("C++");
+    } else if (extension == "py") {
+        editor->getHighlighter()->setLanguage("Python");
+    } else if (extension == "js") {
+        editor->getHighlighter()->setLanguage("JavaScript");
+    } else if (extension == "html" || extension == "htm") {
+        editor->getHighlighter()->setLanguage("HTML");
+    } else if (extension == "java") {
+        editor->getHighlighter()->setLanguage("Java");
+    } else {
+        editor->getHighlighter()->setLanguage("PlainText");
+    }
+}
